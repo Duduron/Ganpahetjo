@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>수열 제어기</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f1f2f6;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            user-select: none;
+        }
+        #status {
+            font-size: 1.1rem;
+            color: #747d8c;
+            margin-bottom: 10px;
+        }
+        #display {
+            font-size: 5.5rem;
+            font-weight: 900;
+            color: #2f3542;
+            margin: 20px 0;
+            min-height: 1.2em;
+        }
+        .progress-container {
+            width: 400px;
+            height: 8px;
+            background-color: #ced6e0;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #3742fa;
+            border-radius: 4px;
+            transition: width 0.2s ease;
+        }
+        .controls {
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #2f3542;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #57606f;
+        }
+        button:disabled {
+            background-color: #dfe4ea;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="status">준비 완료</div>
+    <div id="display">시작</div>
+    
+    <div class="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" disabled>이전</button>
+        <button id="nextBtn">다음</button>
+    </div>
+
+    <script>
+        const sequence = [
+            "21123", "112232", "123212", "223231", "121231", "323122", "333333", "132231", "132231", "231323", "312132", "213232", "323112", "212311", "211121", "222222", "231221", "112333", "111113", "233221", "122332", "112211", "233232",
+            "122123", "122332", "332233", "213131", "132133", "231123", "321321", "233212", "111113", "233333", "111123", "222222", "133133", "213122", "311223", "311223", "122312", "223111", "131231", "313231"
+        ];
+
+        let currentIndex = -1;
+        const total = sequence.length;
+
+        const displayDiv = document.getElementById('display');
+        const statusDiv = document.getElementById('status');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateUI() {
+            if (currentIndex === -1) {
+                displayDiv.innerText = "시작";
+                displayDiv.style.color = "#2f3542";
+                statusDiv.innerText = "준비 완료";
+                progressBar.style.width = "0%";
+                prevBtn.disabled = true;
+                nextBtn.innerText = "다음";
+            } else if (currentIndex < total) {
+                displayDiv.innerText = sequence[currentIndex];
+                displayDiv.style.color = "#2f3542";
+                const percent = Math.round(((currentIndex + 1) / total) * 100);
+                statusDiv.innerText = `${currentIndex + 1} / ${total} (${percent}%)`;
+                progressBar.style.width = percent + '%';
+                prevBtn.disabled = false;
+                nextBtn.innerText = "다음";
+            } else {
+                displayDiv.innerText = "완료!";
+                displayDiv.style.color = "#00b894";
+                statusDiv.innerText = "100% 진행 완료";
+                progressBar.style.width = '100%';
+                nextBtn.innerText = "종료";
+            }
+        }
+
+        function goNext() {
+            if (currentIndex < total) {
+                currentIndex++;
+                updateUI();
+            }
+        }
+
+        function goPrev() {
+            if (currentIndex >= 0) {
+                currentIndex--;
+                updateUI();
+            }
+        }
+
+        nextBtn.addEventListener('click', goNext);
+        prevBtn.addEventListener('click', goPrev);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' || event.key === 'ArrowRight') {
+                event.preventDefault();
+                goNext();
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                goPrev();
+            }
+        });
+    </script>
+</body>
+</html>
